@@ -1,0 +1,127 @@
+wiki = input("Paste: ")
+
+details = wiki.split("	")
+
+series, episode = details[0].split('x')
+series, episode = int(series), int(episode)
+
+date = details[1]
+
+david1, david2  = details[2].split(' and ')
+lee1, lee2  = details[3].split(' and ')
+
+liar = input("Liar: ")
+if liar == "d1": 
+    liar = david1
+elif liar == "d2": 
+    liar = david2
+elif liar == "l1": 
+    liar = lee1
+elif liar == "l2": 
+    liar = lee2
+
+d_score, l_score = details[4].split('–')
+d_score, l_score = int(d_score), int(l_score)
+
+if d_score == l_score: 
+    result = "Draw"
+    lresult = f"It was a draw, {d_score} points to {l_score} points"
+    p5 = "[[Category:Episodes which ended in a draw]]"
+elif d_score > l_score: 
+    result = "David's team won"
+    lresult = f"David's team defeated Lee's team by {d_score} points to {l_score}"
+    p5 = "[[Category:Episodes won by David's team]]"
+else: 
+    result = "Lee's team won"
+    lresult = f"Lee's team defeated David's team by {l_score} points to {d_score}"
+    p5 = "[[Category:Episodes won by Lee's team]]"
+
+
+p1 = f"""
+{{{{Infobox episode
+|overall = 
+|series = {series}
+|episode = {episode}
+|airdate = {date}
+|David1 = {david1}
+|David2 = {david2}
+|Lee1 = {lee1}
+|Lee2 = {lee2}
+|result = {result}
+|rilotw = [[{liar}]]
+|previous = [[Series {series}, Episode {episode-1}]]
+|next = [[Series {series}, Episode {episode+1}]]}}}}
+The '''''' episode of the '''tenth series''' was first broadcast on {date}. It's the - overall episode of ''[[Would I Lie To You?]]''.
+"""
+
+p2 = f"""
+==Guests==
+{{| class="wikitable" border="1" width="40%"
+|- bgcolor="cccccc"
+!Team
+!Guest
+!Appearance #
+|- bgcolor="E1E8EF"
+| rowspan="2" |David's team
+|{david1}
+|1st appearance
+|- bgcolor="E1E8EF"
+|{david2}
+|1st appearance
+|- bgcolor="ffffdd"
+| rowspan="2" |Lee's team
+|{lee1}
+|1st appearance
+|- bgcolor="ffffdd"
+|{lee2}
+|1st appearance
+|}}
+"""
+
+p3 = f"""
+===Home Truths===
+
+*'''{david1}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{david2}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{lee1}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{lee2}:''' "." – {{{{True}}}} {{{{Lie}}}}
+
+===This is My...===
+
+*This week's guest: ''' '''
+*Connections
+**'''{david1}:''' . – {{{{True}}}} {{{{Lie}}}}
+**'''{david2}:''' . – {{{{True}}}} {{{{Lie}}}}
+**'''David Mitchell:''' . – {{{{True}}}} {{{{Lie}}}}
+
+**'''{lee1}:''' . – {{{{True}}}} {{{{Lie}}}}
+**'''{lee2}:''' . – {{{{True}}}} {{{{Lie}}}}
+**'''Lee Mack:''' . – {{{{True}}}} {{{{Lie}}}}
+
+===Quick-Fire Lies===
+
+*'''David Mitchell:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''Lee Mack:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{david1}:''' . – {{{{True}}}} {{{{Lie}}}}
+*'''{david2}:''' . – {{{{True}}}} {{{{Lie}}}}
+*'''{lee1}:''' . – {{{{True}}}} {{{{Lie}}}}
+*'''{lee2}:''' . – {{{{True}}}} {{{{Lie}}}}
+
+{{{{QuoteBox | | }}}}
+{{{{QuoteBox | | }}}}
+{{{{QuoteBox | | }}}}
+
+==Final Scores==
+
+{lresult}. [[{liar}]] was declared as Rob's individual liar of the week.
+"""
+
+p4 = f"""
+{{{{S{series} episodes}}}}
+[[Category:Series {series} episodes]]
+[[Category:Episodes]]
+"""
+final = p1 + p2 + p3 + p4 + p5
+
+from pandas.io.clipboard import copy 
+copy(final)
