@@ -1,16 +1,35 @@
 #%%
-library = {}
+import json
+def divintodict(): 
+    global library
+    library = {}
 
-with open("C:/Users/Ayoola_PC/Documents/PythonScripts/other/pastseries.txt", 'r') as f: 
-    for line in f: 
-        try: 
-            key, value = line.split('\t', maxsplit=1)
-            library[key] = value
-        except ValueError: 
-            continue
+    with open("pastseries.txt", 'r') as f: 
+        for line in f: 
+            try: 
+                key, value = line.split('\t', maxsplit=1)
+                library[key] = value
+            except ValueError: 
+                continue
+
+    jsonfile = json.dumps(library)
+    f = open("library.json", "w")
+    f.write(jsonfile)
+    f.close()
+    
+#%%
+try: 
+    with open("library.json") as jsonfile: 
+        library = json.load(jsonfile) 
+except: 
+    divintodict()
 
 #%%
-wiki = input("Paste: ")
+srinput = int(input("Series: "))
+epinput = int(input("Episode: "))
+totinput = f'{srinput:02d}x{epinput:02d}'
+
+wiki = f'{totinput}\t{library[totinput]}'
 
 details = wiki.split("	")
 
@@ -22,17 +41,7 @@ date = details[1]
 david1, david2  = details[2].split(' and ')
 lee1, lee2  = details[3].split(' and ')
 
-liar = input("Liar: ")
-if liar == "d1": 
-    liar = david1
-elif liar == "d2": 
-    liar = david2
-elif liar == "l1": 
-    liar = lee1
-elif liar == "l2": 
-    liar = lee2
-
-d_score, l_score = details[4].split('–')
+d_score, l_score = details[4].split('â€“')
 d_score, l_score = int(d_score), int(l_score)
 
 if d_score == l_score: 
@@ -137,4 +146,5 @@ p4 = f"""
 final = p1 + p2 + p3 + p4 + p5
 
 from pandas.io.clipboard import copy 
-copy(final)
+print(final)
+# %%
