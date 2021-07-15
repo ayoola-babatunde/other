@@ -1,7 +1,13 @@
 #%%
 import json
-def divintodict(): 
-    global library
+
+    
+    
+#%%
+try: 
+    with open("library.json") as jsonfile: 
+        library = json.load(jsonfile) 
+except FileNotFoundError: 
     library = {}
 
     with open("pastseries.txt", 'r') as f: 
@@ -11,18 +17,11 @@ def divintodict():
                 library[key] = value
             except ValueError: 
                 continue
-
+    del library['Episode']
     jsonfile = json.dumps(library)
     f = open("library.json", "w")
     f.write(jsonfile)
     f.close()
-    
-#%%
-try: 
-    with open("library.json") as jsonfile: 
-        library = json.load(jsonfile) 
-except: 
-    divintodict()
 
 #%%
 srinput = int(input("Series: "))
@@ -138,6 +137,7 @@ p3 = f"""
 {lresult}. 
 """
 
+
 p4 = f"""
 {{{{S{series} episodes}}}}
 [[Category:Series {series} episodes]]
@@ -147,4 +147,4 @@ final = p1 + p2 + p3 + p4 + p5
 
 from pandas.io.clipboard import copy 
 print(final)
-# %%
+
