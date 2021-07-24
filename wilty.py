@@ -47,7 +47,7 @@ except FileNotFoundError:
 #Manual all guests list reference
 #{series:index of last item}
 reference = {1:23, 2:57, 3:92, 4:125, 5:159, 6:193, 7:227, 
-8:269, 9:307, 10:341, 11:383, 12:423, 13:467, 14:511}
+8:269, 9:307, 10:345, 11:383, 12:423, 13:467, 14:511}
 
 #%%
 #Input
@@ -90,7 +90,7 @@ else:
 
 #%%
 #Appearances
-n_allguests = allguests[:reference[series]]
+n_allguests = allguests[:reference[series]+1]
 counts = Counter(n_allguests)
 
 #%%
@@ -144,7 +144,7 @@ p3 = f"""
 
 ===This is My...===
 
-*This week's guest: ''' '''
+*This week's guest: ''''''
 *Connections
 **'''{david2}:''' . – {{{{True}}}} {{{{Lie}}}}
 **'''{david1}:''' . – {{{{True}}}} {{{{Lie}}}}
@@ -183,7 +183,7 @@ p4 = f"""
 final = p1 + p2 + p3 + p4 + p5
 
 from pandas.io.clipboard import copy 
-print(final)
+copy(final)
 
 
 # %%
