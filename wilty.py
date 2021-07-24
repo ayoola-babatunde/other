@@ -8,93 +8,97 @@ from num2words import num2words as n2w
 #%%
 #Convert tables of series to dict
 #{S07x07: Date\tDavid_team\tLee_team\tScore\n}
-try: 
-    with open("library.json") as jsonfile: 
-        library = json.load(jsonfile) 
-except FileNotFoundError: 
-    library = {}
-    with open("pastseries.txt", 'r') as f: 
-        for line in f: 
-            try: 
-                key, value = line.split('\t', maxsplit=1)
-                library[key] = value
-            except ValueError: 
-                continue
-    del library['Episode']
-    jsonfile = json.dumps(library)
-    f = open("library.json", "w")
-    f.write(jsonfile)
-    f.close()
+def mainfunc(ser = None, ep = None, overll = None):
+    try: 
+        with open("library.json") as jsonfile: 
+            library = json.load(jsonfile) 
+    except FileNotFoundError: 
+        library = {}
+        with open("pastseries.txt", 'r') as f: 
+            for line in f: 
+                try: 
+                    key, value = line.split('\t', maxsplit=1)
+                    library[key] = value
+                except ValueError: 
+                    continue
+        del library['Episode']
+        jsonfile = json.dumps(library)
+        f = open("library.json", "w")
+        f.write(jsonfile)
+        f.close()
 
-#%%
-#Convert dict to sequential list of all guests
+    #%%
+    #Convert dict to sequential list of all guests
 
-try: 
-    with open("allguests.txt", "rb") as f: 
-        allguests = pickle.load(f)
-except FileNotFoundError: 
-    allguests = []
-    for title in library: 
-        deet = library[title] #deet = details
-        groups = deet.split('\t')[1:3]
-        for group in groups: 
-            guests = group.split(' and ')
-            allguests = chain(allguests, guests)
-    with open("allguests.txt", "wb") as f: 
-        pickle.dump(list(allguests), f)
+    try: 
+        with open("allguests.txt", "rb") as f: 
+            allguests = pickle.load(f)
+    except FileNotFoundError: 
+        allguests = []
+        for title in library: 
+            deet = library[title] #deet = details
+            groups = deet.split('\t')[1:3]
+            for group in groups: 
+                guests = group.split(' and ')
+                allguests = chain(allguests, guests)
+        with open("allguests.txt", "wb") as f: 
+            pickle.dump(list(allguests), f)
 
-#%%
-#Manual all guests list reference
-#{series:index of last item}
-reference = {1:23, 2:57, 3:92, 4:125, 5:159, 6:193, 7:227, 
-8:269, 9:307, 10:345, 11:383, 12:423, 13:467, 14:511}
+    #%%
+    #Manual all guests list reference
+    #{series:index of last item}
+    reference = {1:23, 2:57, 3:92, 4:125, 5:159, 6:193, 7:227, 
+    8:269, 9:307, 10:345, 11:383, 12:423, 13:467, 14:511}
 
-#%%
-#Input
-srinput = int(input("Series: "))
-epinput = int(input("Episode: "))
-overallinput = int(input("Overall: "))
+    #%%
+    #Input
+    if ser == None: 
+        series = int(input("Series: "))
+        episode = int(input("Episode: "))
+        overallinput = int(input("Overall: "))
+    else: 
+        series = ser
+        episode = ep
+        overallinput = overll
 
-#Get series details in library
-totinput = f'{srinput:02d}x{epinput:02d}'
+    #Get series details in library
+    totinput = f'{series:02d}x{episode:02d}'
 
-wiki = f'{totinput}\t{library[totinput]}'
+    wiki = f'{totinput}\t{library[totinput]}'
 
-#Process details
-details = wiki.split("	")
+    #Process details
+    details = wiki.split("	")
 
-series, episode = srinput, epinput
+    date = details[1]
 
-date = details[1]
+    #guests
+    david1, david2  = details[2].split(' and ')
+    lee1, lee2  = details[3].split(' and ')
 
-#guests
-david1, david2  = details[2].split(' and ')
-lee1, lee2  = details[3].split(' and ')
+    #score
+    d_score, l_score = details[4].split('â€“')
+    d_score, l_score = int(d_score), int(l_score)
 
-#score
-d_score, l_score = details[4].split('â€“')
-d_score, l_score = int(d_score), int(l_score)
+    if d_score == l_score: 
+        result = "Draw"
+        lresult = f"It was a draw, {d_score} points to {l_score} points"
+        p5 = "[[Category:Episodes which ended in a draw]]"
+    elif d_score > l_score: 
+        result = "David's team won"
+        lresult = f"David's team defeated Lee's team by {d_score} points to {l_score}"
+        p5 = "[[Category:Episodes won by David's team]]"
+    else: 
+        result = "Lee's team won"
+        lresult = f"Lee's team defeated David's team by {l_score} points to {d_score}"
+        p5 = "[[Category:Episodes won by Lee's team]]"
 
-if d_score == l_score: 
-    result = "Draw"
-    lresult = f"It was a draw, {d_score} points to {l_score} points"
-    p5 = "[[Category:Episodes which ended in a draw]]"
-elif d_score > l_score: 
-    result = "David's team won"
-    lresult = f"David's team defeated Lee's team by {d_score} points to {l_score}"
-    p5 = "[[Category:Episodes won by David's team]]"
-else: 
-    result = "Lee's team won"
-    lresult = f"Lee's team defeated David's team by {l_score} points to {d_score}"
-    p5 = "[[Category:Episodes won by Lee's team]]"
+    #%%
+    #Appearances
+    n_allguests = allguests[:reference[series]+1]
+    counts = Counter(n_allguests)
 
-#%%
-#Appearances
-n_allguests = allguests[:reference[series]+1]
-counts = Counter(n_allguests)
-
-#%%
-p1 = f"""
+    #%%
+    p1 = f"""
 {{{{Infobox episode
 |overall = {overallinput}
 |series = {series}
@@ -110,7 +114,7 @@ p1 = f"""
 The '''{n2w(episode, ordinal=True)}''' episode of the '''{n2w(series, ordinal=True)} series''' was first broadcast on {date}. It's the {n2w(overallinput, ordinal=True)} overall episode of ''[[Would I Lie To You?]]''.
 """
 
-p2 = f"""
+    p2 = f"""
 ==Guests==
 {{| class="wikitable" border="1" width="40%"
 |- bgcolor="cccccc"
@@ -134,7 +138,7 @@ p2 = f"""
 |}}
 """
 
-p3 = f"""
+    p3 = f"""
 ===Home Truths===
 
 *'''{david1}:''' "." – {{{{True}}}} {{{{Lie}}}}
@@ -158,10 +162,10 @@ p3 = f"""
 
 *'''David Mitchell:''' "." – {{{{True}}}} {{{{Lie}}}}
 *'''Lee Mack:''' "." – {{{{True}}}} {{{{Lie}}}}
-*'''{david1}:''' . – {{{{True}}}} {{{{Lie}}}}
-*'''{david2}:''' . – {{{{True}}}} {{{{Lie}}}}
-*'''{lee1}:''' . – {{{{True}}}} {{{{Lie}}}}
-*'''{lee2}:''' . – {{{{True}}}} {{{{Lie}}}}
+*'''{david1}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{david2}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{lee1}:''' "." – {{{{True}}}} {{{{Lie}}}}
+*'''{lee2}:''' "." – {{{{True}}}} {{{{Lie}}}}
 
 ===Quotes===
 
@@ -175,15 +179,18 @@ p3 = f"""
 """
 
 
-p4 = f"""
+    p4 = f"""
 {{{{S{series} episodes}}}}
 [[Category:Series {series} episodes]]
 [[Category:Episodes]]
 """
-final = p1 + p2 + p3 + p4 + p5
+    final = p1 + p2 + p3 + p4 + p5
 
-from pandas.io.clipboard import copy 
-copy(final)
+    from pandas.io.clipboard import copy 
+    copy(final)
+    print('done')
 
 
 # %%
+if __name__ == "__main__":
+    mainfunc()
